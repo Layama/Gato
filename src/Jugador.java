@@ -1,3 +1,4 @@
+import java.awt.Color;
 
 public class Jugador {
 	private String marca = "";
@@ -8,5 +9,10 @@ public class Jugador {
 	
 	public void pintar(Celda celda){
 		celda.pintar(marca);
+		if(marca.equals("O")){
+			celda.setForeground(Color.blue);
+		} else {
+			celda.setForeground(Color.red);
+		}
 	}
 }

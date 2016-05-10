@@ -6,6 +6,7 @@ public class Celda extends JButton{
 		super.setText(texto);
 	}
 	public void pintar(String texto){
+		System.out.println(texto);
 		super.setText(texto);
 	}
 }

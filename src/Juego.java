@@ -1,6 +1,9 @@
 import java.awt.Color;
+import java.awt.Font;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -10,13 +13,16 @@ import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
 public class Juego {
-	private Jugador[] jugadores = new Jugador[1];
-	private String marcas[] = { "O", "X" };
+	public static String[] marcas = { "O", "X" };
+	public static String marca = Juego.marcas[new Random().nextInt(2)];
 	private Setting settings = new Setting().leerSetting();
 	public static int movimientos = 0;
 	private Thread threadSonido;
 
+
+
 	public Juego(JLabel sonido) {
+
 		if (settings.isPausa()) {
 			sonido.setIcon(new ImageIcon(VistaGato.class.getResource("/imagenes/apagar.png")));
 		} else {
@@ -33,21 +39,40 @@ public class Juego {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		for (int i = 0; i < jugadores.length; i++) {
-			jugadores[i] = new Jugador(marcas[i]);
-		}
 	}
 
-	public String cambiarTurno(String marca) {
+	public String cambiarTurno() {
 		if (marca.equals("X")) {
 			marca = "O";
 		} else {
 			marca = "X";
 		}
-		return marca;
+		return "Jugador " + marca;
 	}
 
-	public Celda validarCelda(Celda celda, Celda celdaEnJuego, String marca, JButton listo) {
+	public void setMarca(JLabel lblMarca) {
+		lblMarca.setText("Jugador " + marca);
+		if (marca.equals("O")) {
+			lblMarca.setForeground(Color.blue);
+		} else {
+			lblMarca.setForeground(Color.red);
+		}
+	}
+	public String cambiarTurno(Celda celda, JLabel marca, JButton turno) {
+		if (celda != null) {
+			marca.setText(cambiarTurno());
+		}
+		if (celda != null) {
+			marca.setText(cambiarTurno());
+			celda.setEnabled(false);
+			celda = null;
+			setMarca(marca);
+		}
+		turno.setEnabled(false);
+		return "Jugador " + marca;
+	}
+
+	public Celda validarCelda(Celda celda, Celda celdaEnJuego, JButton listo) {
 		if (!celda.getText().equals("")) {
 			listo.setEnabled(false);
 			celda.setText("");
@@ -62,28 +87,17 @@ public class Juego {
 		return celdaEnJuego;
 	}
 
-	public void validarGane(Celda[][] celdas, String marca, JLabel lblGanador) {
+	public void validarGane(Celda[][] celdas, JLabel lblGanador) {
 		movimientos++;
 		if (movimientos >= 3) {
 			System.out.println("entrp");
 			if (celdas[0][0].getText().equals(marca) && celdas[1][0].getText().equals(marca)
 					&& celdas[2][0].getText().equals(marca)) {
 				imprimirMensaje(marca, lblGanador);
-				/*
-				 * if (marca.equals("O")) {
-				 * celdas[0][0].setForeground(Color.blue);
-				 * celdas[1][0].setForeground(Color.blue);
-				 * celdas[2][0].setForeground(Color.blue); } else {
-				 * celdas[0][0].setForeground(Color.red);
-				 * celdas[1][0].setForeground(Color.red);
-				 * celdas[2][0].setForeground(Color.red); }
-				 * celdas[0][0].setEnabled(true); ;
-				 * celdas[1][0].setEnabled(true); ;
-				 * celdas[2][0].setEnabled(true); ;
-				 */
 				terminarJuego(celdas);
 			} else if (celdas[0][1].getText().equals(marca) && celdas[1][1].getText().equals(marca)
 					&& celdas[2][1].getText().equals(marca)) {
+
 				imprimirMensaje(marca, lblGanador);
 				terminarJuego(celdas);
 			} else if (celdas[0][2].getText().equals(marca) && celdas[1][2].getText().equals(marca)
