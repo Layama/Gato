@@ -1,30 +1,52 @@
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.FileNotFoundException;
+import java.util.Random;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import javazoom.jl.decoder.JavaLayerException;
+
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
+import javax.swing.ImageIcon;
+import java.awt.Toolkit;
+import javax.swing.SwingConstants;
 
 public class VistaGato extends JFrame {
 
 	private JPanel contentPane;
-	private String marca = "X";
+	private String[] marcas = { "O", "X" };
+	private String marca = marcas[new Random().nextInt(2)];
 	private JLabel lblMarca = new JLabel("Jugador " + marca);
 	private Celda[][] celdas = new Celda[3][3];
 	private Celda celdaEnJuego = null;
-	private boolean inicio = true; 
-	private Juego juego = new Juego();
-	
+	private JLabel lblSonido = new JLabel("");
+	private Juego juego = new Juego(lblSonido);
+	private final JButton btnReiniciar = new JButton("Reiniciar");
+	private final JLabel label;
+	private final JButton btnInstrucciones = new JButton("Info");
+	private JButton btnCambiarTurno = new JButton("Listo!");
+	private static boolean encendido = true;
+	private final JLabel lblGanador = new JLabel("");
+
 	public void setMarca(String marca) {
 		this.marca = marca;
+		lblMarca.setFont(new Font("Arial", Font.BOLD, 14));
 		lblMarca.setText("Jugador " + marca);
-		if(marca.equals("O")){
+		if (marca.equals("O")) {
 			lblMarca.setForeground(Color.blue);
-		}else{
+		} else {
 			lblMarca.setForeground(Color.red);
 		}
 	}
@@ -38,16 +60,19 @@ public class VistaGato extends JFrame {
 				try {
 					VistaGato frame = new VistaGato();
 					frame.setVisible(true);
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
 	}
-	//juego.cambiarTurno();
 
 	public VistaGato() {
-		
+		setIconImage(Toolkit.getDefaultToolkit().getImage(VistaGato.class.getResource("/imagenes/hqdefault.jpg")));
+		setTitle("Gato");
+		setResizable(false);
+		setMarca(marca);
 		JButton btnNewButton = new JButton("New button");
 		btnNewButton.setEnabled(false);
 		getContentPane().add(btnNewButton, BorderLayout.WEST);
@@ -57,32 +82,111 @@ public class VistaGato extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-
-		
-		
-		JButton btnCambiarTurno = new JButton("Listo!");
-		btnCambiarTurno.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(celdaEnJuego != null){
-					marca = juego.cambiarTurno(marca);
-					inicio = false;
-				}
-				
-				if(celdaEnJuego != null){
-					celdaEnJuego.setEnabled(false);
-					celdaEnJuego = null;
-				}
-				
-			}
-		});
+		btnCambiarTurno.setBackground(Color.WHITE);
+		btnCambiarTurno.setEnabled(false);
+		lblSonido.setHorizontalAlignment(SwingConstants.CENTER);
+		lblSonido.setBounds(20, 306, 56, 58);
+		lblGanador.setFont(new Font("Arial", Font.BOLD, 14));
+		lblGanador.setBounds(214, 328, 89, 36);
+		contentPane.add(lblGanador);
+		contentPane.add(lblSonido);
 		btnCambiarTurno.setBounds(405, 23, 109, 23);
 		contentPane.add(btnCambiarTurno);
-
-		lblMarca.setBounds(405, 77, 109, 14);
+		lblMarca.setBounds(405, 77, 109, 23);
 		contentPane.add(lblMarca);
-
+		btnReiniciar.setBackground(Color.WHITE);
+		btnReiniciar.setBounds(425, 319, 89, 23);
+		contentPane.add(btnReiniciar);
 		pintarCeldas();
 		eventCeldas();
+		btnInstrucciones.setBackground(Color.WHITE);
+		btnInstrucciones.setBounds(425, 284, 89, 23);
+		contentPane.add(btnInstrucciones);
+		label = new JLabel("");
+		label.setIcon(new ImageIcon(VistaGato.class.getResource("/imagenes/dos-gatos-2070.jpg")));
+		label.setBounds(-69, 0, 812, 548);
+		contentPane.add(label);
+
+		btnCambiarTurno.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (celdaEnJuego != null) {
+					marca = juego.cambiarTurno(marca);
+				}
+
+				if (celdaEnJuego != null) {
+					celdaEnJuego.setEnabled(false);
+					celdaEnJuego = null;
+					setMarca(marca);
+
+				}
+				btnCambiarTurno.setEnabled(false);
+			}
+		});
+
+		lblSonido.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				encendido = !encendido;
+				System.out.println(encendido+"ENS");
+				if (encendido) {
+					lblSonido.setIcon(new ImageIcon(VistaGato.class.getResource("/imagenes/encender.png")));
+					juego.play();
+				} else {
+					lblSonido.setIcon(new ImageIcon(VistaGato.class.getResource("/imagenes/apagar.png")));
+					juego.pausar();
+				}
+
+			}
+		});
+
+		btnReiniciar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				juego.movimientos = 0;
+				for (int i = 0; i < 3; i++) {
+					for (int j = 0; j < 3; j++) {
+
+						System.out.println(i + " " + j);
+						celdas[i][j].setText("");
+						lblGanador.setText("");
+						celdas[i][j].setEnabled(true);
+						celdaEnJuego = null;
+						btnCambiarTurno.setEnabled(false);
+					}
+				}
+			}
+		});
+
+		btnInstrucciones.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(null,
+						"Pulsa Listo!, cuando lo estes\n para quitar marca pulsa de nuevo el bloque\n que has tocado");
+			}
+		});
 
 	}
 
@@ -90,94 +194,97 @@ public class VistaGato extends JFrame {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				System.out.println(i + " " + j);
-				//celdas[i][j] = new Celda("Celda" + i + ", " + j);
+				// celdas[i][j] = new Celda("Celda" + i + ", " + j);
 				celdas[i][j] = new Celda("");
 				celdas[i][j].setBounds(87 + i * 100, 20 + j * 100, 100, 100);
+				celdas[i][j].setBackground(Color.WHITE);
+				celdas[i][j].setFont(new Font("Arial", Font.PLAIN, 28));
 				contentPane.add(celdas[i][j]);
 			}
 		}
 	}
-	//Juego.validarGane();
-	
-	//juego.validarCelda();
-	
+
 	public void eventCeldas() {
 		celdas[0][0].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean esCeldaValida = juego.validarCelda(celdas[0][0], celdaEnJuego, marca);
-				
-				if(esCeldaValida){
-					juego.validarGane(celdas, marca);
+				celdaEnJuego = juego.validarCelda(celdas[0][0], celdaEnJuego, marca, btnCambiarTurno);
+
+				if (celdaEnJuego != null) {
+					juego.validarGane(celdas, marca, lblGanador);
 				}
 			}
 		});
 		celdas[0][1].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean esCeldaValida = juego.validarCelda(celdas[0][1], celdaEnJuego, marca);
-				if(esCeldaValida){
-					juego.validarGane(celdas, marca);
+				celdaEnJuego = juego.validarCelda(celdas[0][1], celdaEnJuego, marca, btnCambiarTurno);
+				System.out.println(celdaEnJuego);
+				if (celdaEnJuego != null) {
+					juego.validarGane(celdas, marca, lblGanador);
 				}
 			}
 		});
 		celdas[0][2].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean esCeldaValida = juego.validarCelda(celdas[0][2], celdaEnJuego, marca);
-				if(esCeldaValida){
-					juego.validarGane(celdas, marca);
+				celdaEnJuego = juego.validarCelda(celdas[0][2], celdaEnJuego, marca, btnCambiarTurno);
+				if (celdaEnJuego != null) {
+					juego.validarGane(celdas, marca, lblGanador);
 				}
 			}
 		});
 		celdas[1][0].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean esCeldaValida =juego.validarCelda(celdas[1][0], celdaEnJuego, marca);
-				if(esCeldaValida){
-					juego.validarGane(celdas, marca);
+				celdaEnJuego = juego.validarCelda(celdas[1][0], celdaEnJuego, marca, btnCambiarTurno);
+				if (celdaEnJuego != null) {
+					juego.validarGane(celdas, marca, lblGanador);
 				}
 			}
 		});
 		celdas[1][1].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean esCeldaValida = juego.validarCelda(celdas[1][1], celdaEnJuego, marca);
-				if(esCeldaValida){
-					juego.validarGane(celdas, marca);
+				celdaEnJuego = juego.validarCelda(celdas[1][1], celdaEnJuego, marca, btnCambiarTurno);
+				if (celdaEnJuego != null) {
+					juego.validarGane(celdas, marca, lblGanador);
 				}
 			}
 		});
 		celdas[1][2].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean esCeldaValida = juego.validarCelda(celdas[1][2], celdaEnJuego, marca);
+				celdaEnJuego = juego.validarCelda(celdas[1][2], celdaEnJuego, marca, btnCambiarTurno);
+				if (celdaEnJuego != null) {
+					juego.validarGane(celdas, marca, lblGanador);
+				}
 			}
 		});
 		celdas[2][0].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean esCeldaValida = juego.validarCelda(celdas[2][0], celdaEnJuego, marca);
-				if(esCeldaValida){
-					juego.validarGane(celdas, marca);
+				celdaEnJuego = juego.validarCelda(celdas[2][0], celdaEnJuego, marca, btnCambiarTurno);
+				if (celdaEnJuego != null) {
+					juego.validarGane(celdas, marca, lblGanador);
 				}
 			}
 		});
 		celdas[2][1].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean esCeldaValida = juego.validarCelda(celdas[2][1], celdaEnJuego, marca);
-				if(esCeldaValida){
-					juego.validarGane(celdas, marca);
+				celdaEnJuego = juego.validarCelda(celdas[2][1], celdaEnJuego, marca, btnCambiarTurno);
+				if (celdaEnJuego != null) {
+					juego.validarGane(celdas, marca, lblGanador);
 				}
 			}
 		});
 		celdas[2][2].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean esCeldaValida = juego.validarCelda(celdas[2][2], celdaEnJuego, marca);
-				if(esCeldaValida){
-					juego.validarGane(celdas, marca);
+				celdaEnJuego = juego.validarCelda(celdas[2][2], celdaEnJuego, marca, btnCambiarTurno);
+				if (celdaEnJuego != null) {
+					juego.validarGane(celdas, marca, lblGanador);
 				}
 			}
 		});
