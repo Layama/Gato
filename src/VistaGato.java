@@ -17,6 +17,8 @@ public class VistaGato extends JFrame {
 	private Celda[][] celdas = new Celda[3][3];
 	private Celda celdaEnJuego = null;
 	private boolean inicio = true; 
+	private Juego juego = new Juego();
+	
 	public void setMarca(String marca) {
 		this.marca = marca;
 		lblMarca.setText("Jugador " + marca);
@@ -43,13 +45,7 @@ public class VistaGato extends JFrame {
 		});
 	}
 	//juego.cambiarTurno();
-	public void cambiarTurno(){
-		if (marca.equals("X")) {
-			setMarca("O");
-		} else {
-			setMarca("X");
-		}
-	}
+
 	public VistaGato() {
 		
 		JButton btnNewButton = new JButton("New button");
@@ -68,7 +64,7 @@ public class VistaGato extends JFrame {
 		btnCambiarTurno.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(celdaEnJuego != null){
-					cambiarTurno();
+					marca = juego.cambiarTurno(marca);
 					inicio = false;
 				}
 				
@@ -90,7 +86,6 @@ public class VistaGato extends JFrame {
 
 	}
 
-	//jugador.pintarCelda();
 	public void pintarCeldas() {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -103,101 +98,87 @@ public class VistaGato extends JFrame {
 		}
 	}
 	//Juego.validarGane();
-	public void validarGane() {
-		System.out.println("entrp");
-		if (celdas[0][0].getText().equals(marca) && celdas[1][0].getText().equals(marca)
-				&& celdas[2][0].getText().equals(marca)) {
-			System.out.println("GANO!! Lo felicito");
-		} else if (celdas[0][1].getText().equals(marca) && celdas[1][1].getText().equals(marca)
-				&& celdas[2][1].getText().equals(marca)) {
-			System.out.println("GANO!! Lo felicito");
-		} else if (celdas[0][2].getText().equals(marca) && celdas[1][2].getText().equals(marca)
-				&& celdas[2][2].getText().equals(marca)) {
-			System.out.println("GANO!! Lo felicito");
-		} else if (celdas[0][0].getText().equals(marca) && celdas[1][1].getText().equals(marca)
-				&& celdas[2][2].getText().equals(marca)) {
-			System.out.println("GANO!! Lo felicito");
-		} else if (celdas[0][2].getText().equals(marca) && celdas[1][1].getText().equals(marca)
-				&& celdas[2][0].getText().equals(marca)) {
-			System.out.println("GANO!! Lo felicito");
-		} else if (celdas[0][0].getText().equals(marca) && celdas[0][1].getText().equals(marca)
-				&& celdas[0][2].getText().equals(marca)) {
-			System.out.println("GANO!! Lo felicito");
-		} else if (celdas[2][0].getText().equals(marca) && celdas[2][1].getText().equals(marca)
-				&& celdas[2][2].getText().equals(marca)) {
-			System.out.println("GANO!! Lo felicito");
-		} else if (celdas[1][0].getText().equals(marca) && celdas[1][1].getText().equals(marca)
-				&& celdas[1][2].getText().equals(marca)) {
-			System.out.println("GANO!! Lo felicito");
-		}
-	}
-	//juego.validarCelda();
-	public void validarCelda(Celda celda){
 	
-			if (!celda.getText().equals("")) {
-				celda.setText("");
-				celdaEnJuego = null;
-			} else {
-				if(celdaEnJuego == null){
-					celda.pintar(marca);
-					validarGane();
-					celdaEnJuego = celda;
-				}
-			}
-	}
+	//juego.validarCelda();
+	
 	public void eventCeldas() {
 		celdas[0][0].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-					 validarCelda(celdas[0][0]);
+				boolean esCeldaValida = juego.validarCelda(celdas[0][0], celdaEnJuego, marca);
+				
+				if(esCeldaValida){
+					juego.validarGane(celdas, marca);
+				}
 			}
 		});
 		celdas[0][1].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				validarCelda(celdas[0][1]);
+				boolean esCeldaValida = juego.validarCelda(celdas[0][1], celdaEnJuego, marca);
+				if(esCeldaValida){
+					juego.validarGane(celdas, marca);
+				}
 			}
 		});
 		celdas[0][2].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				validarCelda(celdas[0][2]);
+				boolean esCeldaValida = juego.validarCelda(celdas[0][2], celdaEnJuego, marca);
+				if(esCeldaValida){
+					juego.validarGane(celdas, marca);
+				}
 			}
 		});
 		celdas[1][0].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				validarCelda(celdas[1][0]);
+				boolean esCeldaValida =juego.validarCelda(celdas[1][0], celdaEnJuego, marca);
+				if(esCeldaValida){
+					juego.validarGane(celdas, marca);
+				}
 			}
 		});
 		celdas[1][1].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				validarCelda(celdas[1][1]);
+				boolean esCeldaValida = juego.validarCelda(celdas[1][1], celdaEnJuego, marca);
+				if(esCeldaValida){
+					juego.validarGane(celdas, marca);
+				}
 			}
 		});
 		celdas[1][2].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				validarCelda(celdas[1][2]);
+				boolean esCeldaValida = juego.validarCelda(celdas[1][2], celdaEnJuego, marca);
 			}
 		});
 		celdas[2][0].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				validarCelda(celdas[2][0]);
+				boolean esCeldaValida = juego.validarCelda(celdas[2][0], celdaEnJuego, marca);
+				if(esCeldaValida){
+					juego.validarGane(celdas, marca);
+				}
 			}
 		});
 		celdas[2][1].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				validarCelda(celdas[2][1]);
+				boolean esCeldaValida = juego.validarCelda(celdas[2][1], celdaEnJuego, marca);
+				if(esCeldaValida){
+					juego.validarGane(celdas, marca);
+				}
 			}
 		});
 		celdas[2][2].addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				validarCelda(celdas[2][2]);
+				boolean esCeldaValida = juego.validarCelda(celdas[2][2], celdaEnJuego, marca);
+				if(esCeldaValida){
+					juego.validarGane(celdas, marca);
+				}
 			}
 		});
 
